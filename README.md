@@ -11,4 +11,4 @@ docker build --build-arg CONTROLLER_URL=https://labcontroller.nginx.rocks:8443/1
 
 ### run
 
-docker run --rm -dit --privileged --name=nginx-ctrl-nap-test --hostname=nginx-ctrl-nap-test nginx-app-protect-with-controller-agent
+docker run --rm -dit -P --privileged --name=nginx-ctrl-nap-test --hostname=nginx-ctrl-nap-test nginx-app-protect-with-controller-agent
