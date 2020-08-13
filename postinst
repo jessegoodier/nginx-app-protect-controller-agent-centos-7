@@ -1,0 +1,18 @@
+#!/bin/bash
+
+AGENT_CONF=/etc/controller-agent/agent.conf
+AGENT_PID=/var/run/controller-agent/controller-agent.pid
+
+if [ -f "${AGENT_CONF}" ]; then
+    grep -Fxq "beta = True" ${AGENT_CONF}
+    if [ $? != 0 ]
+    then
+        sed "/\[extensions\]/a beta = True" ${AGENT_CONF} -i
+        CONF_UPDATED=true
+    fi
+
+    if [ "${CONF_UPDATED}" == "true" ]
+    then
+        sudo systemctl restart controller-agent
+    fi
+fi
