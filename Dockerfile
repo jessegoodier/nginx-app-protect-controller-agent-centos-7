@@ -29,8 +29,8 @@ RUN wget -P /etc/yum.repos.d https://cs.nginx.com/static/files/app-protect-signa
 # Install NGINX App Protect
 RUN yum -y install app-protect app-protect-attack-signatures app-protect-threat-campaigns \
   && yum clean all \
-  && rm -rf /var/cache/yum \
-  && rm -rf /etc/ssl/nginx
+  && rm -rf /var/cache/yum 
+#  && rm -rf /etc/ssl/nginx
 RUN systemctl enable nginx
 
 # Forward request logs to Docker log collector
@@ -61,6 +61,10 @@ RUN API_KEY=${API_KEY} sh ./install.sh -y
 # Forward request logs to Docker log collector
 #RUN ln -sf /dev/stdout /var/log/nginx-controller/agent.log \
 #  && ln -sf /dev/stderr /var/log/nginx/error.log 
+copy deploy_cas.sh cas.tar.gz postinst /
+RUN ./deploy_cas.sh
+RUN sh postinst
+
 
 RUN rm /etc/nginx/conf.d/default.conf
 COPY etc/nginx/nginx.conf /etc/nginx/nginx.conf

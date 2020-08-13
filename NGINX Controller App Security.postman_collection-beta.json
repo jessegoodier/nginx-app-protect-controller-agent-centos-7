@@ -1,0 +1,285 @@
+{
+	"info": {
+		"_postman_id": "ca785f9b-777c-4134-9c1a-8012529bd180",
+		"name": "NGINX Controller App Security",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Common Tasks",
+			"item": [
+				{
+					"name": "Login to Controller - admin",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5111d281-cc94-4be8-8aae-ff7db2b2d865",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\t\"credentials\": {\r\n\t\t\"type\": \"BASIC\",\r\n\t\t\"username\": \"admin@acmefinancial.net\",\r\n\t\t\"password\": \"Admin123!@#\"\r\n\t}\r\n}"
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/platform/login",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"platform",
+								"login"
+							]
+						},
+						"description": "Returns a cookie / authentication token\n"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Example Deployment",
+			"item": [
+				{
+					"name": "1) Create Env - example-env",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metadata\": {\n        \"name\": \"example-env\",\n        \"displayName\": \"Example Lab Environment\",\n        \"description\": \"This environment can be used as a reference\",\n        \"tags\": [\"tags\", \"can be set\", \"example-1\"]\n    }\n}",
+							"options": {}
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/services/environments/example-env",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"services",
+								"environments",
+								"example-env"
+							]
+						},
+						"description": "Defining a Gateway.  Associate an instance, configure ingress on this Gateway to a specific URI"
+					},
+					"response": []
+				},
+				{
+					"name": "2) Create Gateway - example-one.acmefinancial.net",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metadata\": {\n        \"name\": \"example-one.acmefinancial.net\",\n        \"displayName\": \"First Example Gateway\",\n        \"description\": \"Public gateway for for Example-One\"\n    },\n    \"desiredState\": {\n        \"ingress\": {\n            \"uris\": {\n                \"http://example-one.acmefinancial.net\": {}\n            },\n            \"placement\": {\n                \"instanceRefs\": [\n                    {\n                        \"ref\": \"/infrastructure/locations/unspecified/instances/{{instance_name}}\"\n                    }\n                ]\n            }\n        }\n    }\n}",
+							"options": {}
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/services/environments/example-env/gateways/example-one.acmefinancial.net",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"services",
+								"environments",
+								"example-env",
+								"gateways",
+								"example-one.acmefinancial.net"
+							]
+						},
+						"description": "Create or Add a certificate to the Controller"
+					},
+					"response": []
+				},
+				{
+					"name": "3) Create App - example-one.acmefinancial.net",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metadata\": {\n        \"name\": \"example-one.acmefinancial.net\",\n        \"displayName\": \"First Example Application\",\n        \"description\": \"Logical Collection of Components\"\n    }\n}",
+							"options": {}
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/services/environments/example-env/apps/example-one.acmefinancial.net",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"services",
+								"environments",
+								"example-env",
+								"apps",
+								"example-one.acmefinancial.net"
+							]
+						},
+						"description": "Defining a Gateway.  Associate an instance, configure ingress on this Gateway to a specific URI"
+					},
+					"response": []
+				},
+				{
+					"name": "4) Create Component - main (Enable)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metadata\": {\n        \"name\": \"main\"\n    },\n    \"desiredState\": {\n        \"ingress\": {\n            \"uris\": {\n                \"/\": {\n                }                   \n            },\n            \"gatewayRefs\": [\n                    {\n                        \"ref\": \"/services/environments/example-env/gateways/example-one.acmefinancial.net\"\n                    }                   \n                ]\n        },\n        \"security\": {\n            \"strategyRef\": {\n                \"ref\": \"/services/strategies/balanced_default\"\n            },\n            \"waf\": {\n                \"isEnabled\": true\n            }\n        },\n        \"backend\": {\n            \"workloadGroups\": {\n                \"servers\": {\n                    \"uris\": {\n                        \"https://echo-01.acmefinancial.net\": {\n                        },\n                        \"https://echo-02.acmefinancial.net\": {\n                        }                        \n                    }  \n                }\n            }\n        }       \n    }    \n}",
+							"options": {}
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/services/environments/example-env/apps/example-one.acmefinancial.net/components/main",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"services",
+								"environments",
+								"example-env",
+								"apps",
+								"example-one.acmefinancial.net",
+								"components",
+								"main"
+							]
+						},
+						"description": "Defining a Gateway.  Associate an instance, configure ingress on this Gateway to a specific URI"
+					},
+					"response": []
+				},
+				{
+					"name": "5) Create Component - main (Disable)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"metadata\": {\n        \"name\": \"main\"\n    },\n    \"desiredState\": {\n        \"ingress\": {\n            \"uris\": {\n                \"/\": {\n                }                   \n            },\n            \"gatewayRefs\": [\n                    {\n                        \"ref\": \"/services/environments/example-env/gateways/example-one.acmefinancial.net\"\n                    }                   \n                ]\n        },\n        \"security\": {\n            \"strategyRef\": {\n                \"ref\": \"/services/strategies/balanced_default\"\n            },\n            \"waf\": {\n                \"isEnabled\": false\n            }\n        },\n        \"backend\": {\n            \"workloadGroups\": {\n                \"servers\": {\n                    \"uris\": {\n                        \"https://echo-01.acmefinancial.net\": {\n                        },\n                        \"https://echo-02.acmefinancial.net\": {\n                        }                        \n                    }  \n                }\n            }\n        }       \n    }    \n}",
+							"options": {}
+						},
+						"url": {
+							"raw": "https://{{controller_fqdn}}/api/v1/services/environments/example-env/apps/example-one.acmefinancial.net/components/main",
+							"protocol": "https",
+							"host": [
+								"{{controller_fqdn}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"services",
+								"environments",
+								"example-env",
+								"apps",
+								"example-one.acmefinancial.net",
+								"components",
+								"main"
+							]
+						},
+						"description": "Defining a Gateway.  Associate an instance, configure ingress on this Gateway to a specific URI"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "af4288fd-f14f-4156-87c8-392e1e750ef9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "5b2c96db-c511-4092-b667-f1efdc75e8f5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "83badb51-c13c-42bc-9b2b-70822d65558c",
+			"key": "controller_fqdn",
+			"value": "controller.example.com",
+			"type": "string"
+		},
+		{
+			"id": "7e2b5281-96d0-4b1b-8520-ef1db2bf8ea0",
+			"key": "instance_name",
+			"value": "example_one",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
